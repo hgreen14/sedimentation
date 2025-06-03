@@ -1,0 +1,254 @@
+---
+# Tributary page layout for exploring specific sediment subjects
+layout: page
+custom-foot: js/tributary-interactions.html
+---
+
+<div class="tributary-page">
+  <!-- Tributary header with flowing design -->
+  <div class="tributary-header mb-5">
+    <div class="container-fluid">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-transparent p-0 mb-3">
+              <li class="breadcrumb-item">
+                <a href="{{ '/' | relative_url }}" class="text-primary">
+                  <svg class="icon-sprite me-1" aria-hidden="true">
+                    <use xlink:href="{{ '/assets/lib/icons/bootstrap-icons.svg' | relative_url }}#house"></use>
+                  </svg>
+                  Main River
+                </a>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page">{{ page.title }}</li>
+            </ol>
+          </nav>
+          
+          <h1 class="display-4 mb-3">{{ page.title }}</h1>
+          {% if page.subtitle %}
+          <p class="lead text-muted">{{ page.subtitle }}</p>
+          {% endif %}
+        </div>
+        
+        <div class="col-md-4 text-end">
+          <div class="tributary-flow-viz">
+            <!-- Animated tributary branch visualization -->
+            <svg width="200" height="120" viewBox="0 0 200 120" class="tributary-svg">
+              <defs>
+                <linearGradient id="riverGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style="stop-color:#4A90E2;stop-opacity:1" />
+                  <stop offset="50%" style="stop-color:#7ED321;stop-opacity:1" />
+                  <stop offset="100%" style="stop-color:#D0021B;stop-opacity:1" />
+                </linearGradient>
+              </defs>
+              
+              <!-- Main river flow -->
+              <path d="M 20 60 Q 100 60 180 60" stroke="url(#riverGradient)" stroke-width="8" fill="none" class="main-flow"/>
+              
+              <!-- Tributary branch -->
+              <path d="M 100 60 Q 120 40 160 20" stroke="#8B4513" stroke-width="6" fill="none" class="tributary-flow"/>
+              
+              <!-- Flow particles -->
+              <circle r="3" fill="#4A90E2" class="flow-particle particle-1">
+                <animateMotion dur="3s" repeatCount="indefinite">
+                  <mpath xlink:href="#mainPath"/>
+                </animateMotion>
+              </circle>
+              
+              <circle r="2" fill="#8B4513" class="flow-particle particle-2">
+                <animateMotion dur="2s" repeatCount="indefinite">
+                  <mpath xlink:href="#tributaryPath"/>
+                </animateMotion>
+              </circle>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main content area -->
+  <div class="container">
+    <div class="row">
+      <!-- Primary content -->
+      <div class="col-lg-8">
+        <div class="tributary-content">
+          {{ content }}
+          
+          <!-- Related collection items -->
+          {% if page.subject %}
+          <div class="related-objects mt-5">
+            <h3 class="mb-4">Related Objects</h3>
+            {% assign related_items = site.data[site.metadata] | where_exp: 'item', 'item.subject contains page.subject' | limit: 6 %}
+            
+            {% if related_items.size > 0 %}
+            <div class="row">
+              {% for item in related_items %}
+              <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                  {% if item.image_thumb %}
+                  <img src="{{ item.image_thumb | relative_url }}" class="card-img-top" alt="{{ item.title | escape }}" style="height: 200px; object-fit: cover;">
+                  {% endif %}
+                  <div class="card-body">
+                    <h6 class="card-title">{{ item.title | truncate: 50 }}</h6>
+                    {% if item.description %}
+                    <p class="card-text small text-muted">{{ item.description | truncate: 80 }}</p>
+                    {% endif %}
+                    <a href="{{ '/items/' | append: item.objectid | append: '.html' | relative_url }}" class="btn btn-sm btn-outline-primary">View Object</a>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-muted">No related objects found for this subject.</p>
+            {% endif %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      
+      <!-- Sidebar navigation -->
+      <div class="col-lg-4">
+        <div class="tributary-sidebar position-sticky" style="top: 2rem;">
+          
+          <!-- Quick navigation -->
+          <div class="sidebar-section mb-4">
+            <h5 class="mb-3">Navigate This Tributary</h5>
+            <div id="page-toc">
+              <!-- Generated by JavaScript from page headings -->
+            </div>
+          </div>
+          
+          <!-- Other tributaries -->
+          <div class="sidebar-section mb-4">
+            <h5 class="mb-3">Other Tributaries</h5>
+            {% assign tributaries = site.pages | where: 'layout', 'tributary' %}
+            {% for tributary in tributaries %}
+              {% unless tributary.url == page.url %}
+              <a href="{{ tributary.url | relative_url }}" class="d-block p-2 mb-2 text-decoration-none border-start border-3 border-secondary ps-3">
+                {{ tributary.title }}
+              </a>
+              {% endunless %}
+            {% endfor %}
+          </div>
+          
+          <!-- Return to main flow -->
+          <div class="sidebar-section">
+            <a href="{{ '/#river-section' | relative_url }}" class="btn btn-primary d-block">
+              <svg class="icon-sprite me-2" aria-hidden="true">
+                <use xlink:href="{{ '/assets/lib/icons/bootstrap-icons.svg' | relative_url }}#arrow-left"></use>
+              </svg>
+              Return to Main River
+            </a>
+          </div>
+          
+          <!-- Contribute section -->
+          <div class="sidebar-section mt-4 p-3 bg-light rounded">
+            <h6 class="mb-2">Share Your Story</h6>
+            <p class="small text-muted mb-3">Have a sediment story related to {{ page.title | downcase }}?</p>
+            <a href="{{ '/contribute.html' | relative_url }}?subject={{ page.title | slugify }}" class="btn btn-sm btn-outline-primary">
+              Contribute Story
+            </a>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.tributary-header {
+  background: linear-gradient(135deg, rgba(139, 69, 19, 0.1) 0%, rgba(210, 105, 30, 0.1) 100%);
+  border-bottom: 3px solid rgba(139, 69, 19, 0.2);
+  padding: 2rem 0;
+}
+
+.tributary-flow-viz {
+  opacity: 0.8;
+}
+
+.tributary-svg .main-flow {
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+  animation: drawPath 3s ease-in-out forwards;
+}
+
+.tributary-svg .tributary-flow {
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: drawPath 2s ease-in-out 1s forwards;
+}
+
+@keyframes drawPath {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.tributary-content {
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+
+.tributary-content h2,
+.tributary-content h3 {
+  color: #8B4513;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.tributary-content blockquote {
+  border-left: 4px solid #8B4513;
+  background: rgba(139, 69, 19, 0.05);
+  padding: 1rem 2rem;
+  margin: 2rem 0;
+  font-style: italic;
+}
+
+.tributary-sidebar {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 2rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(139, 69, 19, 0.1);
+}
+
+.sidebar-section {
+  border-bottom: 1px solid rgba(139, 69, 19, 0.1);
+  padding-bottom: 1rem;
+}
+
+.sidebar-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+#page-toc a {
+  display: block;
+  padding: 0.5rem 0;
+  color: #6c757d;
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  padding-left: 1rem;
+  margin-left: -1rem;
+  transition: all 0.2s ease;
+}
+
+#page-toc a:hover,
+#page-toc a.active {
+  color: #8B4513;
+  border-left-color: #8B4513;
+  background: rgba(139, 69, 19, 0.05);
+}
+
+.breadcrumb-item a {
+  text-decoration: none;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  content: "→";
+  color: #8B4513;
+}
+</style>

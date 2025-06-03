@@ -1,0 +1,321 @@
+<script>
+// Sedimentation scrolling interactions and tributary navigation
+class SedimentationScroll {
+  constructor() {
+    this.currentSection = null;
+    this.tributaryButtons = null;
+    this.init();
+  }
+  
+  init() {
+    this.setupScrollObserver();
+    this.setupTributaryButtons();
+    this.setupSmoothScrolling();
+    this.setupParallaxEffects();
+  }
+  
+  setupScrollObserver() {
+    // Observe river sections for tributary highlighting
+    const riverSections = document.querySelectorAll('.river-section');
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const subject = entry.target.dataset.subject;
+          this.highlightTributary(subject);
+          this.currentSection = subject;
+        }
+      });
+    }, {
+      threshold: 0.3,
+      rootMargin: '-20% 0px -20% 0px'
+    });
+    
+    riverSections.forEach(section => observer.observe(section));
+  }
+  
+  setupTributaryButtons() {
+    const tributaryContainer = document.getElementById('tributary-buttons');
+    if (!tributaryContainer) return;
+    
+    const subjects = [
+      { key: 'formation', label: 'Formation', icon: 'geo-alt' },
+      { key: 'movement', label: 'Movement', icon: 'arrow-right-circle' },
+      { key: 'accumulation', label: 'Accumulation', icon: 'layers' },
+      { key: 'ecosystem', label: 'Ecosystem', icon: 'tree' },
+      { key: 'infrastructure', label: 'Infrastructure', icon: 'building' },
+      { key: 'indigenous', label: 'Indigenous', icon: 'people' }
+    ];
+    
+    subjects.forEach((subject, index) => {
+      const button = document.createElement('div');
+      button.className = 'tributary-button mb-2';
+      button.dataset.subject = subject.key;
+      button.style.animationDelay = `${index * 0.1}s`;
+      
+      button.innerHTML = `
+        <a href="/tributary/${subject.key}.html" 
+           class="btn btn-floating shadow" 
+           title="${subject.label}"
+           data-bs-toggle="tooltip">
+          <svg class="icon-sprite" aria-hidden="true">
+            <use xlink:href="/assets/lib/icons/bootstrap-icons.svg#${subject.icon}"></use>
+          </svg>
+          <span class="tributary-label">${subject.label}</span>
+        </a>
+      `;
+      
+      tributaryContainer.appendChild(button);
+    });
+    
+    // Initialize tooltips
+    if (typeof bootstrap !== 'undefined') {
+      const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+      });
+    }
+  }
+  
+  highlightTributary(subject) {
+    // Highlight corresponding tributary link
+    const tributaryLinks = document.querySelectorAll('.tributary-link');
+    tributaryLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.dataset.subject === subject) {
+        link.classList.add('active');
+      }
+    });
+    
+    // Highlight floating button
+    const tributaryButtons = document.querySelectorAll('.tributary-button');
+    tributaryButtons.forEach(button => {
+      button.classList.remove('active');
+      if (button.dataset.subject === subject) {
+        button.classList.add('active');
+      }
+    });
+  }
+  
+  setupSmoothScrolling() {
+    // Enhanced smooth scrolling for river navigation
+    const riverLinks = document.querySelectorAll('a[href^="#"]');
+    
+    riverLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        const href = link.getAttribute('href');
+        const target = document.querySelector(href);
+        
+        if (target) {
+          e.preventDefault();
+          
+          const offsetTop = target.offsetTop - 100;
+          
+          window.scrollTo({
+            top: offsetTop,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+  }
+  
+  setupParallaxEffects() {
+    let ticking = false;
+    
+    const updateParallax = () => {
+      const scrolled = window.pageYOffset;
+      const rate = scrolled * -0.5;
+      
+      // Parallax effect for landing section background
+      const landingSection = document.getElementById('landing-section');
+      if (landingSection) {
+        landingSection.style.transform = `translateY(${rate}px)`;
+      }
+      
+      // Floating animation for content bubbles
+      const contentBubbles = document.querySelectorAll('.content-bubble');
+      contentBubbles.forEach((bubble, index) => {
+        const bubbleRate = Math.sin(scrolled * 0.001 + index) * 10;
+        bubble.style.transform = `translateY(${bubbleRate}px)`;
+      });
+      
+      ticking = false;
+    };
+    
+    const requestTick = () => {
+      if (!ticking) {
+        requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
+    };
+    
+    window.addEventListener('scroll', requestTick);
+  }
+  
+  // Method to programmatically navigate to a section
+  navigateToSection(subject) {
+    const section = document.querySelector(`[data-subject="${subject}"]`);
+    if (section) {
+      const offsetTop = section.offsetTop - 150;
+      window.scrollTo({
+        top: offsetTop,
+        behavior: 'smooth'
+      });
+    }
+  }
+}
+
+// Enhanced CSS animations and interactions
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize scrolling system
+  const sedimentationScroll = new SedimentationScroll();
+  
+  // Add dynamic styles
+  const style = document.createElement('style');
+  style.textContent = `
+    /* Floating tributary buttons */
+    .tributary-button {
+      opacity: 0;
+      animation: slideInRight 0.6s ease forwards;
+    }
+    
+    .tributary-button .btn-floating {
+      background: linear-gradient(45deg, #8B4513, #D2691E);
+      border: none;
+      color: white;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+    
+    .tributary-button .btn-floating:hover {
+      transform: scale(1.1);
+      box-shadow: 0 8px 25px rgba(139, 69, 19, 0.4);
+      color: white;
+      text-decoration: none;
+    }
+    
+    .tributary-button.active .btn-floating {
+      background: linear-gradient(45deg, #D2691E, #8B4513);
+      transform: scale(1.15);
+      box-shadow: 0 8px 30px rgba(139, 69, 19, 0.6);
+    }
+    
+    .tributary-label {
+      position: absolute;
+      right: 70px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      opacity: 0;
+      transform: translateX(10px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+    
+    .tributary-button:hover .tributary-label {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    
+    /* Active tributary link styling */
+    .tributary-link.active {
+      background: linear-gradient(45deg, rgba(139, 69, 19, 0.15), rgba(139, 69, 19, 0.25));
+      border-left-width: 6px;
+      transform: translateX(3px);
+      box-shadow: 0 6px 20px rgba(139, 69, 19, 0.2);
+    }
+    
+    /* Enhanced river flow animations */
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(100px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    /* Pulsing animation for active elements */
+    .tributary-button.active::before {
+      content: '';
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      right: -5px;
+      bottom: -5px;
+      background: linear-gradient(45deg, #8B4513, #D2691E);
+      border-radius: 50%;
+      opacity: 0.3;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 0.3;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 0.1;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 0.3;
+      }
+    }
+    
+    /* Improved content bubble animations */
+    .content-bubble {
+      animation: fadeInUp 0.8s ease forwards;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Stagger animation delays */
+    .river-section:nth-child(1) .content-bubble { animation-delay: 0.2s; }
+    .river-section:nth-child(2) .content-bubble { animation-delay: 0.4s; }
+    .river-section:nth-child(3) .content-bubble { animation-delay: 0.6s; }
+    .river-section:nth-child(4) .content-bubble { animation-delay: 0.8s; }
+    .river-section:nth-child(5) .content-bubble { animation-delay: 1.0s; }
+    .river-section:nth-child(6) .content-bubble { animation-delay: 1.2s; }
+    .river-section:nth-child(7) .content-bubble { animation-delay: 1.4s; }
+  `;
+  
+  document.head.appendChild(style);
+  
+  // Auto-start experience if user scrolls instead of clicking button
+  let hasStarted = false;
+  const handleScroll = () => {
+    if (!hasStarted && window.scrollY > 100) {
+      hasStarted = true;
+      const beginButton = document.getElementById('begin-journey');
+      if (beginButton && beginButton.style.display !== 'none') {
+        beginButton.click();
+      }
+    }
+  };
+  
+  window.addEventListener('scroll', handleScroll);
+});
+</script>

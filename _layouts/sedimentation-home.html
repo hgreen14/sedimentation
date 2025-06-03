@@ -1,0 +1,156 @@
+---
+# Sedimentation home page with river-like scrolling experience
+layout: default
+custom-foot: js/sedimentation-particles.html;js/sedimentation-scroll.html
+---
+
+<div id="sedimentation-container">
+  <!-- Landing section with sediment particle text effect -->
+  <section id="landing-section" class="min-vh-100 d-flex align-items-center justify-content-center position-relative">
+    <div id="particle-canvas"></div>
+    <div id="title-container" class="text-center text-white position-relative z-3">
+      <h1 id="particle-title" class="display-1 fw-bold mb-4">Sedimentation</h1>
+      <p class="lead mb-4">{{ site.description | default: "Exploring sediment around Glen Canyon in its multitude of formations, interactions, and movements" }}</p>
+      <button id="begin-journey" class="btn btn-outline-light btn-lg">Begin the Journey</button>
+    </div>
+    <!-- Reservoir outline for particles to fill -->
+    <div id="reservoir-outline" class="position-absolute"></div>
+  </section>
+
+  <!-- About/Orientation section -->
+  <section id="about-section" class="py-5 bg-light">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <h2 class="mb-4">About Sedimentation</h2>
+          {{ content }}
+          <p class="lead">Navigate through this digital landscape by following the main river of content below, or branch off into tributaries to explore specific subjects in detail.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- River navigation section -->
+  <section id="river-section" class="py-5">
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Main river content -->
+        <div class="col-lg-8 main-river">
+          <div id="river-flow">
+            {% include sedimentation/river-content.html %}
+          </div>
+        </div>
+        
+        <!-- Tributaries sidebar -->
+        <div class="col-lg-4 tributaries-sidebar position-sticky" style="top: 2rem;">
+          <h3 class="mb-4">Explore Tributaries</h3>
+          {% include sedimentation/tributaries-nav.html %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Collection showcase -->
+  <section id="collection-section" class="py-5 bg-dark text-light">
+    <div class="container">
+      <h2 class="text-center mb-5">Collection Objects</h2>
+      <div class="row">
+        <div class="col-md-6">
+          {% include index/carousel.html title="Featured Objects" %}
+        </div>
+        <div class="col-md-6">
+          {% include index/featured-terms.html field="subject" title="Subjects" btn-color="light" %}
+          <div class="mt-4">
+            <a href="{{ '/browse.html' | relative_url }}" class="btn btn-outline-light">View All Objects</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Floating tributary access buttons -->
+<div id="tributary-buttons" class="position-fixed end-0 top-50 translate-middle-y z-3">
+  <!-- Will be populated by JavaScript -->
+</div>
+
+<style>
+/* Landing section styles */
+#landing-section {
+  background: linear-gradient(135deg, #8B4513 0%, #D2691E 25%, #CD853F 50%, #DEB887 75%, #F4A460 100%);
+  overflow: hidden;
+}
+
+#particle-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+#particle-title {
+  font-size: clamp(2rem, 8vw, 6rem);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+/* River section styles */
+.main-river {
+  position: relative;
+}
+
+#river-flow {
+  position: relative;
+  padding: 2rem 0;
+}
+
+#river-flow::before {
+  content: '';
+  position: absolute;
+  left: 50px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, #4A90E2 0%, #7ED321 50%, #D0021B 100%);
+  border-radius: 2px;
+}
+
+/* Tributary styles */
+.tributaries-sidebar {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 2rem;
+  backdrop-filter: blur(10px);
+  height: fit-content;
+}
+
+.tributary-link {
+  display: block;
+  padding: 1rem;
+  margin: 0.5rem 0;
+  background: linear-gradient(45deg, transparent, rgba(139, 69, 19, 0.1));
+  border-left: 4px solid #8B4513;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.tributary-link:hover {
+  background: linear-gradient(45deg, rgba(139, 69, 19, 0.1), rgba(139, 69, 19, 0.2));
+  border-left-width: 8px;
+  transform: translateX(5px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .tributaries-sidebar {
+    position: relative !important;
+    margin-top: 2rem;
+  }
+  
+  #tributary-buttons {
+    display: none;
+  }
+}
+</style>

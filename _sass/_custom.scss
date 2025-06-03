@@ -2,3 +2,257 @@
     Put your custom SCSS here! 
     This allows you to override any CollectionBuilder or Bootstrap CSS without modifying the base theme files directly.
 */
+
+@use "sass:color";
+
+/* Sedimentation project custom styles */
+
+// Color palette
+$sediment-brown: #8B4513;
+$sediment-orange: #D2691E;
+$sediment-tan: #DEB887;
+$sediment-sand: #F4A460;
+$river-blue: #4A90E2;
+$vegetation-green: #7ED321;
+$warning-red: #D0021B;
+
+/* Global sedimentation theme */
+.sedimentation-theme {
+  font-family: 'Georgia', serif;
+}
+
+/* Enhanced typography for readability */
+.tributary-content,
+.river-content {
+  h2, h3, h4 {
+    color: $sediment-brown;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+  }
+  
+  blockquote {
+    border-left: 4px solid $sediment-brown;
+    background: rgba($sediment-brown, 0.05);
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+    font-style: italic;
+    font-size: 1.1rem;
+    
+    &::before {
+      content: '"';
+      font-size: 3rem;
+      color: $sediment-brown;
+      opacity: 0.3;
+      line-height: 1;
+      float: left;
+      margin: -0.5rem 0.5rem 0 0;
+    }
+  }
+}
+
+/* Button enhancements */
+.btn-sediment {
+  background: linear-gradient(45deg, $sediment-brown, $sediment-orange);
+  border: none;
+  color: white;
+  
+  &:hover {
+    background: linear-gradient(45deg, color.adjust($sediment-brown, $lightness: -10%), color.adjust($sediment-orange, $lightness: -10%));
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba($sediment-brown, 0.3);
+  }
+}
+
+/* Card enhancements for object displays */
+.card {
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  }
+}
+
+/* Enhanced navigation */
+.navbar {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* Breadcrumb styling */
+.breadcrumb {
+  .breadcrumb-item {
+    + .breadcrumb-item::before {
+      content: "→";
+      color: $sediment-brown;
+      font-weight: bold;
+    }
+    
+    a {
+      color: $sediment-brown;
+      text-decoration: none;
+      
+      &:hover {
+        color: $sediment-orange;
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+/* Footer enhancements */
+.footer {
+  background: linear-gradient(135deg, $sediment-brown, $sediment-orange);
+  color: white;
+  
+  a {
+    color: rgba(white, 0.8);
+    
+    &:hover {
+      color: white;
+    }
+  }
+}
+
+/* Responsive image enhancements */
+.figure {
+  img {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      transform: scale(1.02);
+    }
+  }
+  
+  .figure-caption {
+    font-style: italic;
+    color: #6c757d;
+    margin-top: 0.5rem;
+  }
+}
+
+/* Enhanced table styling for collection data */
+.table {
+  th {
+    background: linear-gradient(135deg, rgba($sediment-brown, 0.1), rgba($sediment-orange, 0.1));
+    color: $sediment-brown;
+    font-weight: 600;
+    border-bottom: 2px solid $sediment-brown;
+  }
+  
+  tbody tr:hover {
+    background: rgba($sediment-brown, 0.05);
+  }
+}
+
+/* Search enhancements */
+.search-box {
+  .form-control {
+    border: 2px solid rgba($sediment-brown, 0.2);
+    border-radius: 25px;
+    
+    &:focus {
+      border-color: $sediment-brown;
+      box-shadow: 0 0 0 0.2rem rgba($sediment-brown, 0.25);
+    }
+  }
+}
+
+/* Map enhancements */
+.map-container {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+/* Timeline enhancements */
+.timeline {
+  .timeline-item {
+    border-left: 3px solid $sediment-brown;
+    
+    &::before {
+      background: $sediment-brown;
+    }
+  }
+}
+
+/* Subject cloud enhancements */
+.subject-cloud {
+  a {
+    background: linear-gradient(45deg, rgba($sediment-brown, 0.1), rgba($sediment-orange, 0.1));
+    border: 1px solid rgba($sediment-brown, 0.2);
+    color: $sediment-brown;
+    margin: 0.25rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: linear-gradient(45deg, rgba($sediment-brown, 0.2), rgba($sediment-orange, 0.2));
+      border-color: $sediment-brown;
+      color: $sediment-brown;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba($sediment-brown, 0.2);
+    }
+  }
+}
+
+/* Print styles */
+@media print {
+  .tributary-header,
+  .tributary-sidebar,
+  #tributary-buttons,
+  .navbar,
+  .footer {
+    display: none !important;
+  }
+  
+  .tributary-content {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .content-bubble {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .content-bubble {
+    border: 2px solid #000 !important;
+    background: #fff !important;
+  }
+  
+  .tributary-link {
+    border: 2px solid #000 !important;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .tributary-button {
+    animation: none !important;
+  }
+}

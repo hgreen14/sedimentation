@@ -1,0 +1,263 @@
+<script>
+// Sediment particle system for the landing page
+class SedimentParticles {
+  constructor(canvas) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.particles = [];
+    this.isAnimating = false;
+    this.titleElement = document.getElementById('particle-title');
+    this.reservoirElement = document.getElementById('reservoir-outline');
+    
+    this.init();
+  }
+  
+  init() {
+    this.resizeCanvas();
+    this.createInitialParticles();
+    this.setupReservoir();
+    
+    window.addEventListener('resize', () => this.resizeCanvas());
+    
+    // Start animation loop
+    this.animate();
+  }
+  
+  resizeCanvas() {
+    this.canvas.width = window.innerWidth;
+    this.canvas.height = window.innerHeight;
+  }
+  
+  createInitialParticles() {
+    // Create particles that will form the title text
+    const particleCount = 150;
+    
+    for (let i = 0; i < particleCount; i++) {
+      this.particles.push({
+        x: Math.random() * this.canvas.width,
+        y: Math.random() * this.canvas.height,
+        targetX: 0,
+        targetY: 0,
+        vx: (Math.random() - 0.5) * 2,
+        vy: (Math.random() - 0.5) * 2,
+        size: Math.random() * 4 + 2,
+        opacity: Math.random() * 0.8 + 0.2,
+        color: this.getRandomSedimentColor(),
+        phase: 'floating', // floating, forming, draining
+        isInTitle: false
+      });
+    }
+  }
+  
+  setupReservoir() {
+    // Position reservoir outline at bottom of screen
+    if (this.reservoirElement) {
+      this.reservoirElement.style.bottom = '10%';
+      this.reservoirElement.style.left = '50%';
+      this.reservoirElement.style.transform = 'translateX(-50%)';
+      this.reservoirElement.style.width = '300px';
+      this.reservoirElement.style.height = '150px';
+      this.reservoirElement.style.border = '3px solid rgba(255,255,255,0.3)';
+      this.reservoirElement.style.borderRadius = '20px';
+      this.reservoirElement.style.opacity = '0';
+    }
+  }
+  
+  getRandomSedimentColor() {
+    const colors = [
+      'rgba(139, 69, 19, 0.8)',   // saddle brown
+      'rgba(210, 105, 30, 0.8)',  // chocolate
+      'rgba(205, 133, 63, 0.8)',  // peru
+      'rgba(222, 184, 135, 0.8)', // burlywood
+      'rgba(244, 164, 96, 0.8)'   // sandy brown
+    ];
+    return colors[Math.floor(Math.random() * colors.length)];
+  }
+  
+  getTextPositions() {
+    // Calculate approximate positions where particles should gather to form text
+    const titleRect = this.titleElement.getBoundingClientRect();
+    const centerX = this.canvas.width / 2;
+    const centerY = titleRect.top + titleRect.height / 2;
+    
+    const positions = [];
+    const chars = 'SEDIMENTATION'.split('');
+    const charWidth = titleRect.width / chars.length;
+    
+    chars.forEach((char, index) => {
+      const charX = titleRect.left + (index * charWidth) + (charWidth / 2);
+      const charY = centerY;
+      
+      // Add some random positions around each character
+      for (let i = 0; i < 12; i++) {
+        positions.push({
+          x: charX + (Math.random() - 0.5) * charWidth * 0.8,
+          y: charY + (Math.random() - 0.5) * 40
+        });
+      }
+    });
+    
+    return positions;
+  }
+  
+  formTitle() {
+    const textPositions = this.getTextPositions();
+    
+    this.particles.forEach((particle, index) => {
+      if (index < textPositions.length) {
+        particle.targetX = textPositions[index].x;
+        particle.targetY = textPositions[index].y;
+        particle.phase = 'forming';
+        particle.isInTitle = true;
+      }
+    });
+    
+    // Show reservoir outline after a delay
+    setTimeout(() => {
+      if (this.reservoirElement) {
+        this.reservoirElement.style.transition = 'opacity 2s ease';
+        this.reservoirElement.style.opacity = '1';
+      }
+    }, 3000);
+  }
+  
+  drainToReservoir() {
+    if (!this.reservoirElement) return;
+    
+    const reservoirRect = this.reservoirElement.getBoundingClientRect();
+    const reservoirCenterX = reservoirRect.left + reservoirRect.width / 2;
+    const reservoirCenterY = reservoirRect.top + reservoirRect.height / 2;
+    
+    this.particles.forEach(particle => {
+      particle.targetX = reservoirCenterX + (Math.random() - 0.5) * reservoirRect.width * 0.8;
+      particle.targetY = reservoirCenterY + (Math.random() - 0.5) * reservoirRect.height * 0.8;
+      particle.phase = 'draining';
+    });
+    
+    // Hide title text
+    if (this.titleElement) {
+      this.titleElement.style.transition = 'opacity 1s ease';
+      this.titleElement.style.opacity = '0';
+    }
+  }
+  
+  cascadeDown() {
+    this.particles.forEach(particle => {
+      particle.targetX = Math.random() * this.canvas.width;
+      particle.targetY = this.canvas.height + 100;
+      particle.vy = Math.random() * 5 + 2;
+    });
+    
+    // Trigger scroll to next section after particles start falling
+    setTimeout(() => {
+      const aboutSection = document.getElementById('about-section');
+      if (aboutSection) {
+        aboutSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 1000);
+  }
+  
+  updateParticles() {
+    this.particles.forEach(particle => {
+      // Move towards target position
+      const dx = particle.targetX - particle.x;
+      const dy = particle.targetY - particle.y;
+      
+      if (particle.phase === 'floating') {
+        // Random floating motion
+        particle.vx += (Math.random() - 0.5) * 0.1;
+        particle.vy += (Math.random() - 0.5) * 0.1;
+        
+        // Damping
+        particle.vx *= 0.98;
+        particle.vy *= 0.98;
+        
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        
+      } else if (particle.phase === 'forming') {
+        // Move towards text position
+        particle.vx = dx * 0.05;
+        particle.vy = dy * 0.05;
+        
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        
+      } else if (particle.phase === 'draining') {
+        // Move towards reservoir
+        particle.vx = dx * 0.03;
+        particle.vy = dy * 0.03 + 0.1; // Add gravity
+        
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+      }
+      
+      // Keep particles on screen during floating phase
+      if (particle.phase === 'floating') {
+        if (particle.x < 0 || particle.x > this.canvas.width) particle.vx *= -0.5;
+        if (particle.y < 0 || particle.y > this.canvas.height) particle.vy *= -0.5;
+        
+        particle.x = Math.max(0, Math.min(this.canvas.width, particle.x));
+        particle.y = Math.max(0, Math.min(this.canvas.height, particle.y));
+      }
+    });
+  }
+  
+  drawParticles() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    
+    this.particles.forEach(particle => {
+      this.ctx.save();
+      
+      this.ctx.globalAlpha = particle.opacity;
+      this.ctx.fillStyle = particle.color;
+      
+      this.ctx.beginPath();
+      this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+      this.ctx.fill();
+      
+      this.ctx.restore();
+    });
+  }
+  
+  animate() {
+    this.updateParticles();
+    this.drawParticles();
+    requestAnimationFrame(() => this.animate());
+  }
+}
+
+// Initialize particle system when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  const canvas = document.createElement('canvas');
+  canvas.style.position = 'absolute';
+  canvas.style.top = '0';
+  canvas.style.left = '0';
+  canvas.style.pointerEvents = 'none';
+  canvas.style.zIndex = '1';
+  
+  const particleContainer = document.getElementById('particle-canvas');
+  if (particleContainer) {
+    particleContainer.appendChild(canvas);
+    
+    const particles = new SedimentParticles(canvas);
+    
+    // Start forming title after a brief delay
+    setTimeout(() => {
+      particles.formTitle();
+    }, 1000);
+    
+    // Handle begin journey button
+    const beginButton = document.getElementById('begin-journey');
+    if (beginButton) {
+      beginButton.addEventListener('click', () => {
+        particles.drainToReservoir();
+        
+        setTimeout(() => {
+          particles.cascadeDown();
+        }, 2000);
+      });
+    }
+  }
+});
+</script>

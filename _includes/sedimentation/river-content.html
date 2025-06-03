@@ -1,0 +1,177 @@
+<!-- River flow content with sediment-themed sections -->
+<div class="river-content">
+  
+  <!-- Sediment formation section -->
+  <div class="river-section" data-subject="formation">
+    <div class="content-bubble left">
+      <h3>Formation</h3>
+      <p>Sediment begins its journey in the weathering of canyon walls, the slow dissolution of sandstone, the patient work of wind and water breaking down the ancient layers of Glen Canyon.</p>
+      <a href="{{ '/tributary/formation.html' | relative_url }}" class="btn btn-outline-primary">Explore Formation →</a>
+    </div>
+  </div>
+
+  <!-- Movement and transport -->
+  <div class="river-section" data-subject="movement">
+    <div class="content-bubble right">
+      <h3>Movement</h3>
+      <p>Once freed from stone, sediment travels - carried by streams, lifted by wind, suspended in the Colorado River's flow. Each particle has its own path, its own velocity, its own destination.</p>
+      <a href="{{ '/tributary/movement.html' | relative_url }}" class="btn btn-outline-secondary">Explore Movement →</a>
+    </div>
+  </div>
+
+  <!-- Accumulation and deposition -->
+  <div class="river-section" data-subject="accumulation">
+    <div class="content-bubble left">
+      <h3>Accumulation</h3>
+      <p>Sediment settles, builds, creates new landscapes. In quiet eddies, behind the dam, in sacred spaces now underwater - sediment tells the story of time made visible.</p>
+      <a href="{{ '/tributary/accumulation.html' | relative_url }}" class="btn btn-outline-success">Explore Accumulation →</a>
+    </div>
+  </div>
+
+  <!-- Ecosystem interactions -->
+  <div class="river-section" data-subject="ecosystem">
+    <div class="content-bubble right">
+      <h3>Ecosystem</h3>
+      <p>Sediment is not alone. It hosts algae, feeds fish, becomes part of bird nests, adobe homes, human lungs. It connects all life in the canyon ecosystem.</p>
+      <a href="{{ '/tributary/ecosystem.html' | relative_url }}" class="btn btn-outline-info">Explore Ecosystem →</a>
+    </div>
+  </div>
+
+  <!-- Infrastructure and disruption -->
+  <div class="river-section" data-subject="infrastructure">
+    <div class="content-bubble left">
+      <h3>Infrastructure</h3>
+      <p>Dams interrupt sediment's ancient rhythms. Concrete barriers trap particles that once nourished downstream ecosystems, creating new geographies of abundance and scarcity.</p>
+      <a href="{{ '/tributary/infrastructure.html' | relative_url }}" class="btn btn-outline-warning">Explore Infrastructure →</a>
+    </div>
+  </div>
+
+  <!-- Indigenous relations -->
+  <div class="river-section" data-subject="indigenous">
+    <div class="content-bubble right">
+      <h3>Indigenous Relations</h3>
+      <p>For thousands of years, Indigenous communities have understood sediment's vital role. Their knowledge offers pathways to understanding landscapes as living, relational systems.</p>
+      <a href="{{ '/tributary/indigenous.html' | relative_url }}" class="btn btn-outline-danger">Explore Indigenous Relations →</a>
+    </div>
+  </div>
+
+  <!-- Future possibilities -->
+  <div class="river-section" data-subject="future">
+    <div class="content-bubble center">
+      <h3>Future Flows</h3>
+      <p>What futures might sediment help us imagine? How might we learn to live in better relationship with the materials that make our world?</p>
+      <div class="mt-3">
+        <a href="{{ '/tributary/future.html' | relative_url }}" class="btn btn-primary me-2">Explore Futures →</a>
+        <a href="{{ '/browse.html' | relative_url }}" class="btn btn-outline-primary">View All Objects</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<style>
+.river-content {
+  position: relative;
+  padding: 2rem 0;
+}
+
+.river-section {
+  margin: 4rem 0;
+  position: relative;
+}
+
+.content-bubble {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  max-width: 500px;
+  position: relative;
+}
+
+.content-bubble.left {
+  margin-left: 100px;
+}
+
+.content-bubble.right {
+  margin-left: auto;
+  margin-right: 100px;
+}
+
+.content-bubble.center {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 600px;
+  text-align: center;
+}
+
+.content-bubble::before {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: inherit;
+  transform: rotate(45deg);
+}
+
+.content-bubble.left::before {
+  left: -10px;
+  top: 30px;
+}
+
+.content-bubble.right::before {
+  right: -10px;
+  top: 30px;
+}
+
+.content-bubble.center::before {
+  display: none;
+}
+
+/* Floating sediment particles */
+.river-section::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: rgba(139, 69, 19, 0.6);
+  border-radius: 50%;
+  left: 48px;
+  top: 50%;
+  animation: float 6s ease-in-out infinite;
+}
+
+.river-section:nth-child(odd)::after {
+  animation-delay: -2s;
+  background: rgba(210, 105, 30, 0.6);
+}
+
+.river-section:nth-child(even)::after {
+  animation-delay: -4s;
+  background: rgba(222, 184, 135, 0.6);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.6; }
+  25% { transform: translateY(-10px) translateX(5px); opacity: 1; }
+  50% { transform: translateY(0px) translateX(-5px); opacity: 0.8; }
+  75% { transform: translateY(10px) translateX(3px); opacity: 1; }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .content-bubble.left,
+  .content-bubble.right {
+    margin-left: 50px;
+    margin-right: 1rem;
+    max-width: calc(100% - 70px);
+  }
+  
+  .content-bubble::before {
+    left: -10px;
+    right: auto;
+  }
+}
+</style>
